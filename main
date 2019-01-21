@@ -1,0 +1,40 @@
+var roleHarvester = require('role.harvester');
+var roleUpgrader = require('role.upgrader');
+var roleBuilder = require('role.builder');
+module.exports.loop = function() {
+    var minHelpers = 5;
+    var numHelpers = _.sum(Game.creeps, (c) => c.memory.role == 'harvester');
+    var name = undefined;
+    if (numHelpers < minHelpers) {
+        name = Game.spawns.Main.createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'harvester', working: false});
+    }
+    var minHelpersUpgrade = 5;
+    var numHelpersUpgrade = _.sum(Game.creeps, (c) => c.memory.role == 'upgrader');
+    var name = undefined;
+    if (numHelpersUpgrade < minHelpersUpgrade) {
+        name = Game.spawns.Main.createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'upgrader', working: false});
+    }
+    var minHelpersBuild = 5;
+    var numHelpersBuild = _.sum(Game.creeps, (c) => c.memory.role == 'builder');
+    var name = undefined;
+    if (numHelpersBuild < minHelpersBuild) {
+        Game.spawns.Main.createCreep([WORK, CARRY, MOVE, MOVE], undefined, {role: 'builder', working: false});
+    }
+    for (let name in Game.creeps) {
+        var creep = Game.creeps[name];
+        if (creep.memory.role == 'harvester') {
+            roleHarvester.run(creep);
+        }
+        if (creep.memory.role == 'upgrader') {
+            roleUpgrader.run(creep);
+        }
+        if (creep.memory.role == 'builder') {
+            roleBuilder.run(creep);
+        }
+    }
+    for(var i in Memory.creeps) {
+        if(!Game.creeps[i]) {
+            delete Memory.creeps[i];
+        }
+    }
+};
